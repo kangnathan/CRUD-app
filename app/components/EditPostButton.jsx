@@ -1,42 +1,66 @@
-"use client";
-import { useState } from "react";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
-import axios from "axios";
+'use client';
+import { useState } from 'react';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, CircularProgress, Typography } from '@mui/material';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import EditIcon from '@mui/icons-material/Edit';
+
 
 export default function EditPostButton({ postId, initialTitle, initialContent }) {
+    const router = useRouter();
     const [open, setOpen] = useState(false);
     const [title, setTitle] = useState(initialTitle);
     const [content, setContent] = useState(initialContent);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
 
     const handleClickOpen = () => {
         setOpen(true);
     };
 
     const handleClose = () => {
+        setTitle(initialTitle);
+        setContent(initialContent);
         setOpen(false);
     };
 
     const handleSave = async () => {
-    try {
-        await axios.put(`/api/post/${postId}`, { title, content });
-        handleClose();
-        window.location.reload(); // This refreshes the page
-    } catch (error) {
-        console.error("Failed to update the post:", error);
-    }
-    };
+        setIsLoading(true);
+        setError('');
 
+        try {
+            await axios.put(`/api/post/${postId}`, { title, content });
+            router.refresh(); 
+            handleClose();
+        } catch (error) {
+            console.error("Failed to update the post:", error.response?.data || error.message);
+            setError(error.response?.data?.message || 'Failed to update the post. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <>
-            <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-                Edit Post
-            </Button>
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Edit Post</DialogTitle>
-                <DialogContent>
+            <EditIcon style={{ color: 'white' }} onClick={handleClickOpen}></EditIcon>
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="edit-post-dialog-title"
+                aria-describedby="edit-post-dialog-description"
+                PaperProps={{
+                style: {
+                    borderRadius: '25px',
+                    backgroundColor: "#d9d9d9",
+                    padding: "15px 20px 15px 20px"
+                }
+            }}
+            >
+                <DialogTitle id="edit-post-dialog-title">Edit Post</DialogTitle>
+                <DialogContent id="edit-post-dialog-description">
+                    {error && <Typography color="error">{error}</Typography>}
                     <TextField
-                        autoFocus
+                        
                         margin="dense"
                         label="Title"
                         type="text"
@@ -56,15 +80,22 @@ export default function EditPostButton({ postId, initialTitle, initialContent })
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="secondary">
+                    <Button onClick={handleClose} style={{
+                            marginRight: "15px",
+                            color: "black",
+                            borderRadius:"20px"
+                        }}  disabled={isLoading}>
                         Cancel
                     </Button>
-                    <Button onClick={handleSave} color="primary">
-                        Save
+                    <Button onClick={handleSave} variant='contained' size='small'style={{
+                            marginRight: "15px",
+                            backgroundColor: "#cd733b",
+                            borderRadius:"20px"
+                        }} disabled={isLoading}>
+                        {isLoading ? <CircularProgress size={24} /> : 'Save'}
                     </Button>
                 </DialogActions>
             </Dialog>
         </>
     );
 }
-

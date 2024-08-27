@@ -14,7 +14,10 @@ model Post {
   id        String     @default(cuid()) @id
   title     String
   content   String?
-  published Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deleted Boolean @default(false)
+  deletedAt DateTime?
   author    User?   @relation(fields: [authorId], references: [id])
   authorId  String?
 }

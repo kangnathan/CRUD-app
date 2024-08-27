@@ -1,15 +1,28 @@
 import prisma from '@/lib/prisma';
-import HomeClient from './components/HomeClient'; // Ensure the path is correct
+import HomeClient from './components/HomeClient';
+import { formatDateTime } from '@/utils/formatDateTime';
 
 async function getPosts() {
-  const posts = await prisma.post.findMany({
-    where: { published: true },
-    include: { author: { select: { name: true } } },
-  });
-  return posts;
+  try {
+    const posts = await prisma.post.findMany({
+      include: { author: { select: { name: true } } },
+    });
+
+    return posts.map(post => ({
+      ...post,
+      authorName: post.author ? post.author.name : 'Unknown', // Handle null author
+      createdAt: formatDateTime(post.createdAt),
+      updatedAt: formatDateTime(post.updatedAt),
+      deletedAt: post.deletedAt ? formatDateTime(post.deletedAt) : null,
+    }));
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    return [];
+  }
 }
 
 export default async function Home() {
   const posts = await getPosts();
   return <HomeClient posts={posts} />;
 }
+
