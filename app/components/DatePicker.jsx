@@ -1,8 +1,7 @@
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker as MUIDatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Grid, TextField } from '@mui/material';
-import ClearFiltersButton from './ClearFiltersButton'; 
+import { Grid, TextField, Button } from '@mui/material';
 
 export default function DatePicker({ startDate, setStartDate, endDate, setEndDate }) {
 
@@ -32,18 +31,18 @@ export default function DatePicker({ startDate, setStartDate, endDate, setEndDat
                 <TextField
                   {...params}
                   sx={{
-                    width: '101.7%',
-                    '& .MuiInputBase-input': { color: 'black' }, // Text color
-                    '& .MuiInputLabel-root': { color: 'black' }, // Label color
-                    '& .MuiOutlinedInput-root': {
-                      border: '1px solid black', // Border with color
-                      borderRadius: '25px', // Border radius
-                    },
-                    '& .MuiSvgIcon-root': { color: 'black' }, // Calendar icon color
-                    '& .MuiInputBase-root': {
-                      backgroundColor: 'white', // Background color for the input
-                    },
-                  }}
+                      width: '101.7%',
+                      '& .MuiInputBase-input': { color: 'black' },
+                      '& .MuiInputLabel-root': { color: 'black' },
+                      '& .MuiOutlinedInput-root': {
+                        border: '1px solid black',
+                        borderRadius: '25px',
+                      },
+                      '& .MuiSvgIcon-root': { color: 'black' },
+                      '& .MuiInputBase-root': {
+                        backgroundColor: 'white',
+                      },
+                    }}
                 />
               ),
             }}
@@ -61,16 +60,16 @@ export default function DatePicker({ startDate, setStartDate, endDate, setEndDat
                   <TextField
                     {...params}
                     sx={{
-                      width: '134%',
-                      '& .MuiInputBase-input': { color: 'black' }, // Text color
-                      '& .MuiInputLabel-root': { color: 'black' }, // Label color
+                      width: '125.7%',
+                      '& .MuiInputBase-input': { color: 'black' },
+                      '& .MuiInputLabel-root': { color: 'black' },
                       '& .MuiOutlinedInput-root': {
-                        border: '1px solid black', // Border with color
-                        borderRadius: '25px', // Border radius
+                        border: '1px solid black',
+                        borderRadius: '25px',
                       },
-                      '& .MuiSvgIcon-root': { color: 'black' }, // Calendar icon color
+                      '& .MuiSvgIcon-root': { color: 'black' },
                       '& .MuiInputBase-root': {
-                        backgroundColor: 'white', // Background color for the input
+                        backgroundColor: 'white',
                       },
                     }}
                   />
@@ -79,7 +78,23 @@ export default function DatePicker({ startDate, setStartDate, endDate, setEndDat
             />
           </Grid>
           <Grid item xs={3}>
-            <ClearFiltersButton onClick={handleClearFilters} />
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleClearFilters}
+              sx={{
+                backgroundColor: 'white',
+                color: 'black',
+                borderRadius: 20,
+                textTransform: 'none',
+                marginLeft: '100px',
+                width: '150px',
+                paddingTop: '10px',
+                paddingBottom: '10px',
+              }}
+            >
+              Clear Filters
+            </Button>
           </Grid>
         </Grid>
       </Grid>

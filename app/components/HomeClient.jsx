@@ -2,9 +2,10 @@
 import { useState } from 'react';
 import Post from './Post';
 import AddPostModal from './AddPostModal';
+import DeleteForm from './DeleteForm';
+import EditForm from './EditForm';
 import { Container, Button, Grid, Typography, Switch } from '@mui/material';
 import DatePicker from './DatePicker';
-import PostFilterSelect from './PostFilterSelect';
 
 export default function HomeClient({ posts }) {
   const [open, setOpen] = useState(false);
@@ -12,23 +13,38 @@ export default function HomeClient({ posts }) {
   const [endDate, setEndDate] = useState(null);
   const [showDeleted, setShowDeleted] = useState('hide');
   const [darkMode, setDarkMode] = useState(true);
+  const [deleteFormOpen, setDeleteFormOpen] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState(null);
+  const [editFormOpen, setEditFormOpen] = useState(false);
+  const [selectedEditPost, setSelectedEditPost] = useState(null);
 
-  const handleOpen = () => {
-    setOpen(true);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const handleThemeChange = () => setDarkMode(!darkMode);
+
+  const handleDeleteFormOpen = (postId) => {
+    setSelectedPostId(postId);
+    setDeleteFormOpen(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleDeleteFormClose = () => {
+    setDeleteFormOpen(false);
+    setSelectedPostId(null);
   };
 
-  const handleShowDeletedChange = (event) => {
-    setShowDeleted(event.target.value);
+  const handleEditFormOpen = (post) => {
+    setSelectedEditPost(post);
+    setEditFormOpen(true);
   };
 
-  const handleThemeChange = () => {
-    setDarkMode(!darkMode);
+  const handleEditFormClose = () => {
+    setEditFormOpen(false);
+    setSelectedEditPost(null);
   };
 
+  const handleShowDeletedChange = (event) => setShowDeleted(event.target.value);
+
+  // Filter posts based on startDate, endDate, and showDeleted
   const filteredPosts = posts.filter(post => {
     const postDate = new Date(post.createdAt);
     const isWithinDateRange = (!startDate || postDate >= new Date(startDate)) &&
@@ -45,9 +61,7 @@ export default function HomeClient({ posts }) {
       minHeight: '100vh',
       padding: '20px'
     }} maxWidth={false}>
-      <Grid container justifyContent="space-between" alignItems="center" sx={{ marginBottom: 4, px: { xs: 2, md: 6 } }}>
-        
-        <PostFilterSelect showDeleted={showDeleted} handleShowDeletedChange={handleShowDeletedChange} />
+      <Grid container justifyContent="end" sx={{ marginBottom: 4, px: { xs: 2, md: 6 } }}>
 
         <Grid item>
           <Switch checked={darkMode} onChange={handleThemeChange} />
@@ -56,7 +70,7 @@ export default function HomeClient({ posts }) {
           </Typography>
         </Grid>
       </Grid>
-      
+
       <Grid
         container
         alignItems="center"
@@ -82,8 +96,7 @@ export default function HomeClient({ posts }) {
               width: '100px',
               paddingTop: '10px',
               paddingBottom: '10px',
-              marginRight:'225px',
-              marginBottom:'20px'
+              marginBottom: '20px'
             }}
             onClick={handleOpen}
           >
@@ -100,10 +113,12 @@ export default function HomeClient({ posts }) {
                 id={post.id}
                 title={post.title}
                 content={post.content}
-                authorName={post.author ? post.author.name : 'Unknown'}
+                authorName={post.authorName || 'Unknown'}
                 createdAt={post.createdAt}
                 updatedAt={post.updatedAt}
                 deletedAt={post.deletedAt}
+                onDelete={() => handleDeleteFormOpen(post.id)}
+                onEdit={() => handleEditFormOpen(post)}  // Add edit handler
               />
             </Grid>
           ))
@@ -122,6 +137,20 @@ export default function HomeClient({ posts }) {
       </Grid>
 
       <AddPostModal open={open} onClose={handleClose} />
+      <DeleteForm 
+        open={deleteFormOpen} 
+        onClose={handleDeleteFormClose} 
+        postId={selectedPostId} 
+      />
+      {selectedEditPost && (
+        <EditForm 
+          open={editFormOpen} 
+          onClose={handleEditFormClose} 
+          postId={selectedEditPost.id} 
+          initialTitle={selectedEditPost.title}
+          initialContent={selectedEditPost.content} 
+        />
+      )}
     </Container>
   );
 }
